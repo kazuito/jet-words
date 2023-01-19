@@ -4,7 +4,7 @@ import ProblemTexts from "./ProblemText";
 import { getRandInt } from "./utils";
 import getWords from "./word-db";
 
-const MoveInToLeft = keyframes`
+const PopAnimation = keyframes`
   0% {
     transform: scale(1)
   }
@@ -27,6 +27,8 @@ const AppFrame = styled.div`
   grid-template-columns: repeat(12, 1fr);
   grid-template-rows: repeat(12, 1fr);
 `;
+
+// Problem Section
 const ProblemSec = styled.div`
   grid-column: 4 / 10;
   grid-row: 3 / 7;
@@ -38,20 +40,20 @@ const ProblemSec = styled.div`
   }
 `;
 const ProblemBox = styled.div`
-  padding: 42px 64px;
+  padding: 34px 60px;
   border: 3.6px #333333 solid;
   border-radius: 16px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 4px;
   transition: 1s;
 
   &.animate {
-    animation: 0.3s ${MoveInToLeft};
+    animation: 0.3s ${PopAnimation};
   }
 `;
 
-//
+// Input Section
 const InputSec = styled.div`
   display: grid;
   place-content: center center;
@@ -64,7 +66,6 @@ const InputWrapper = styled.div`
   width: 220px;
   display: grid;
   place-content: center center;
-
 
   &::after {
     transition: 0.3s;
@@ -82,19 +83,18 @@ const InputWrapper = styled.div`
 `;
 const InputCommon = styled.div`
   font-size: 24px;
-  font-family: monospace;
   font-weight: bold;
   padding: 4px 16px;
   background: transparent;
   width: 100%;
   transition: 0.2s;
-  letter-spacing: -.5px;
+  letter-spacing: -0.5px;
 `;
 const InputBox = styled(InputCommon.withComponent("input"))`
   color: #333333;
 `;
 const AnswerText = styled(InputCommon)`
-  margin-bottom: -36.8px;
+  margin-bottom: -44px;
   color: #c8c8c8;
   white-space: nowrap;
   overflow: visible;
@@ -103,7 +103,6 @@ const AnswerText = styled(InputCommon)`
 function App() {
   const [words, setWords] = useState([["Loading...", "Loading..."]]);
   const [inputVal, setInputVal] = useState("");
-
   const [wordObj, setWordObj] = useState(() => {
     let rnd = getRandInt(0, words.length);
     return {
@@ -112,6 +111,8 @@ function App() {
       number: rnd,
     };
   });
+  const [miss, setMiss] = useState(false);
+  const [shouldAnimate, setShouldAnimate] = useState(true);
 
   useEffect(() => {
     getWords().then((w) => {
@@ -123,16 +124,10 @@ function App() {
     newProblem();
   }, [words.length]);
 
-  const [miss, setMiss] = useState(false);
-
-  const [shouldAnimate, setShouldAnimate] = useState(true);
-
   function newProblem() {
     setMiss(false);
     setWordObj((prev) => {
       let rnd = getRandInt(0, words.length);
-      // if (prev.number == rnd) newProblem();
-      // let rnd = 34;
       return {
         en: words[rnd][0],
         ja: words[rnd][1],

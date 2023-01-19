@@ -93,14 +93,15 @@ const ProblemTextBase = styled.div<{
     width: 20px;
     height: 20px;
     background: ${(p) => p.badgeColor};
-    border-radius: 12px;
+    border-radius: 10px;
     transform: translateY(1.4px);
+    margin-top: 5px;
   }
 `;
 const ProblemTextWrapper = styled.span`
   display: flex;
   flex-wrap: wrap;
-  row-gap: 8px;
+  row-gap: 4px;
 `;
 const NormalText = styled.span`
   white-space: nowrap;
