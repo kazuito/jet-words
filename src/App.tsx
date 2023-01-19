@@ -111,7 +111,7 @@ function App() {
       number: rnd,
     };
   });
-  const [miss, setMiss] = useState(false);
+  const [missCount, setMissCount] = useState(0);
   const [shouldAnimate, setShouldAnimate] = useState(true);
 
   useEffect(() => {
@@ -125,7 +125,7 @@ function App() {
   }, [words.length]);
 
   function newProblem() {
-    setMiss(false);
+    setMissCount(0);
     setWordObj((prev) => {
       let rnd = getRandInt(0, words.length);
       return {
@@ -149,7 +149,7 @@ function App() {
       </ProblemSec>
       <InputSec>
         <InputWrapper>
-          {miss && <AnswerText>{wordObj.en}</AnswerText>}
+          {missCount > 0 && <AnswerText>{wordObj.en}</AnswerText>}
           <InputBox
             value={inputVal}
             onInput={(e) => {
@@ -161,7 +161,7 @@ function App() {
                 setInputVal(newVal);
               } else {
                 setInputVal("");
-                setMiss(true);
+                setMissCount((cur) => cur + 1);
               }
             }}
           />
