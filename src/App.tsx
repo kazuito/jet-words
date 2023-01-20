@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import styled, { keyframes } from "styled-components";
 import ProblemTexts from "./ProblemText";
-import { getRandInt } from "./utils";
+import { getRandInt, speech } from "./utils";
 import getWords from "./word-db";
 import jetWordsLogoPath from "./assets/jetwords-logo-text.svg";
 
@@ -177,13 +177,21 @@ function App() {
             onInput={(e) => {
               let newVal = (e.target as HTMLInputElement).value;
               if (newVal == wordObj.en) {
+                if (missCount == 0) {
+                  speech(wordObj.en);
+                }
                 newProblem();
                 setInputVal("");
               } else if (wordObj.en.startsWith(newVal)) {
                 setInputVal(newVal);
               } else {
                 setInputVal("");
-                setMissCount((cur) => cur + 1);
+                setMissCount((cur) => {
+                  if (cur == 0) {
+                    speech(wordObj.en);
+                  }
+                  return cur + 1;
+                });
               }
             }}
           />
