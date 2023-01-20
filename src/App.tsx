@@ -3,6 +3,7 @@ import styled, { keyframes } from "styled-components";
 import ProblemTexts from "./ProblemText";
 import { getRandInt } from "./utils";
 import getWords from "./word-db";
+import jetWordsLogoPath from "./assets/jetwords-logo-text.svg";
 
 const PopAnimation = keyframes`
   0% {
@@ -28,6 +29,22 @@ const AppFrame = styled.div`
   grid-template-rows: repeat(12, 1fr);
 `;
 
+// Header
+const Header = styled.header`
+  position: absolute;
+  top: 0;
+  height: 104px;
+  width: 100vw;
+  padding: 0 4vw;
+  /* background: gold; */
+  justify-self: center;
+  display: grid;
+  place-content: center start;
+`;
+const JetWordsLogo = styled.img`
+  width: 160px;
+  height: auto;
+`;
 // Problem Section
 const ProblemSec = styled.div`
   grid-column: 4 / 10;
@@ -142,6 +159,11 @@ function App() {
   }
   return (
     <AppFrame>
+      <Header>
+        <a href="/">
+          <JetWordsLogo src={jetWordsLogoPath} alt="JetWords logo" />
+        </a>
+      </Header>
       <ProblemSec>
         <ProblemBox className={shouldAnimate ? "animate" : ""}>
           <ProblemTexts text={wordObj.ja} />
