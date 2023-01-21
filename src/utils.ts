@@ -8,13 +8,15 @@ function getRandInt(min: number, max: number): number {
   return min + Math.floor(Math.random() * max);
 }
 
+const utter = new SpeechSynthesisUtterance("");
+const synth = window.speechSynthesis;
 /**
  * Speech text with the Web Speech API
  * @param text text to speech
  */
 function speech(text: string) {
-  const synth = window.speechSynthesis;
-  const utter = new SpeechSynthesisUtterance(text);
+  utter.text = text;
+  synth.cancel();
   synth.speak(utter);
 }
 
