@@ -1,4 +1,7 @@
+import { useRecoilState } from "recoil";
 import styled, { keyframes } from "styled-components";
+import { userSettingsState } from "../recoil/atoms/userSettingsState";
+import { Settings } from "../types";
 
 const PopAnimation = keyframes`
   0% {
@@ -89,13 +92,24 @@ const InputRadioLabel = styled.label`
 `;
 
 const InputRadio = (props: { text: string; name: string; value: string }) => {
+  const [userSettings, setUserSettings] = useRecoilState(userSettingsState);
+
   return (
-    <>
-      <InputRadioLabel>
-        <input type="radio" name={props.name} />
-        {props.text}
-      </InputRadioLabel>
-    </>
+    <InputRadioLabel>
+      <input
+        type="radio"
+        name={props.name}
+        defaultChecked={
+          userSettings[props.name as keyof Settings] == props.value
+        }
+        onChange={(e) => {
+          setUserSettings((cur) => {
+            return { ...cur, [props.name]: props.value };
+          });
+        }}
+      />
+      {props.text}
+    </InputRadioLabel>
   );
 };
 
@@ -108,22 +122,22 @@ const SettingSummary = (props: { title: string; description: string }) => {
   );
 };
 
-const Settings = () => {
+const SettingsPanel = () => {
   return (
     <SettingsSec>
       <H2>Settings</H2>
       <Set>
         <SettingSummary
-          title="Auto Speech"
+          title="Auto speech the answer"
           description="Speech the answer automatically"
         />
         <SettingInput>
-          <InputRadio text="on" name="auto_speech" value="on" />
-          <InputRadio text="off" name="auto_speech" value="off" />
+          <InputRadio text="on" name="auto_speech_answer" value="on" />
+          <InputRadio text="off" name="auto_speech_answer" value="off" />
         </SettingInput>
       </Set>
     </SettingsSec>
   );
 };
 
-export default Settings;
+export default SettingsPanel;

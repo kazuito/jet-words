@@ -7,7 +7,9 @@ import getWords from "./word-db";
 import jetWordsLogoPath from "./assets/jetwords-logo-text.svg";
 
 import ProblemTexts from "./ProblemText";
-import Settings from "./components/Settings";
+import SettingsPanel from "./components/SettingsPanel";
+import { useSetRecoilState } from "recoil";
+import { userSettingsState } from "./recoil/atoms/userSettingsState";
 
 const PopAnimation = keyframes`
   0% {
@@ -15,7 +17,6 @@ const PopAnimation = keyframes`
   }
   50% {
     transform: scale(1.1)
-
   }
   80% {
     transform: scale(.98)
@@ -141,8 +142,16 @@ function App() {
   const [missCount, setMissCount] = useState(0);
   const [shouldAnimate, setShouldAnimate] = useState(true);
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const setUserSettings = useSetRecoilState(userSettingsState);
 
   useEffect(() => {
+    let user_settings_str = localStorage.getItem("user_settings");
+    console.log("u", user_settings_str);
+    if (user_settings_str != null) {
+      setUserSettings(JSON.parse(user_settings_str));
+      console.log("setls", JSON.parse(user_settings_str));
+    }
+
     getWords().then((w) => {
       setWords(JSON.parse(w).words);
     });
@@ -222,7 +231,7 @@ function App() {
           />
         </InputWrapper>
       </InputSec>
-      {settingsOpen && <Settings />}
+      {settingsOpen && <SettingsPanel />}
     </AppFrame>
   );
 }
