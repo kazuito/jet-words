@@ -1,9 +1,15 @@
 import { useEffect, useState } from "react";
 import styled, { keyframes } from "styled-components";
-import ProblemTexts from "./ProblemText";
 import { getRandInt, speech } from "./utils";
+import { IoSettingsSharp } from "react-icons/io5";
+
 import getWords from "./word-db";
 import jetWordsLogoPath from "./assets/jetwords-logo-text.svg";
+
+import ProblemTexts from "./ProblemText";
+import SettingsPanel from "./components/SettingsPanel";
+import { useRecoilState } from "recoil";
+import { userSettingsState } from "./recoil/atoms/userSettingsState";
 
 const PopAnimation = keyframes`
   0% {
@@ -11,7 +17,6 @@ const PopAnimation = keyframes`
   }
   50% {
     transform: scale(1.1)
-
   }
   80% {
     transform: scale(.98)
@@ -31,29 +36,35 @@ const AppFrame = styled.div`
 
 // Header
 const Header = styled.header`
-  position: absolute;
-  top: 0;
-  height: 104px;
-  width: 100vw;
+  grid-row-start: 1;
+  grid-column: 1 / -1;
+  height: 80px;
+  width: 100%;
   padding: 0 4vw;
-  /* background: gold; */
   justify-self: center;
-  display: grid;
-  place-content: center start;
+  display: flex;
+  align-items: center;
+`;
+const HeaderR = styled.div`
+  display: flex;
+  align-items: center;
+  margin-left: auto;
+  /* background: gold; */
 `;
 const JetWordsLogo = styled.img`
   width: 160px;
   height: auto;
 `;
+
 // Problem Section
-const ProblemSec = styled.div`
-  grid-column: 4 / 10;
+const ProblemSec = styled.div<{ settingsOpen: boolean }>`
+  grid-column: ${(p) => (p.settingsOpen ? "2 / 6" : "2 / -2")};
   grid-row: 3 / 7;
   display: grid;
   place-content: center center;
 
   @media screen and (max-width: 1200px) {
-    grid-column: 2 / 12;
+    /* grid-column: 2 / 12; */
   }
 `;
 const ProblemBox = styled.div`
@@ -63,7 +74,6 @@ const ProblemBox = styled.div`
   display: flex;
   flex-direction: column;
   gap: 4px;
-  transition: 1s;
 
   &.animate {
     animation: 0.3s ${PopAnimation};
@@ -71,13 +81,14 @@ const ProblemBox = styled.div`
 `;
 
 // Input Section
-const InputSec = styled.div`
+const InputSec = styled.div<{ settingsOpen: boolean }>`
   display: grid;
   place-content: center center;
-  grid-column: 6 / 8;
+  grid-column: ${(p) => (p.settingsOpen ? "1/7" : "1/-1")};
   grid-row: 8 / 9;
   position: relative;
   transition: 0.3s;
+  transition: 1s;
 `;
 const InputWrapper = styled.div`
   width: 220px;
@@ -130,8 +141,18 @@ function App() {
   });
   const [missCount, setMissCount] = useState(0);
   const [shouldAnimate, setShouldAnimate] = useState(true);
+  const [settingsOpen, setSettingsOpen] = useState(false);
+  const [userSettings, setUserSettings] = useRecoilState(userSettingsState);
 
   useEffect(() => {
+    let user_settings_str = localStorage.getItem("user_settings");
+    console.log("u", user_settings_str);
+    if (user_settings_str != null) {
+      setUserSettings((cur) => {
+        return { ...cur, ...JSON.parse(user_settings_str!) };
+      });
+    }
+
     getWords().then((w) => {
       setWords(JSON.parse(w).words);
     });
@@ -151,25 +172,39 @@ function App() {
         number: rnd,
       };
     });
-    setShouldAnimate(true);
+    ProblemPopAnimate();
+  }
 
+  function ProblemPopAnimate() {
+    setShouldAnimate(true);
     setTimeout(() => {
       setShouldAnimate(false);
     }, 400);
   }
+
   return (
     <AppFrame>
       <Header>
         <a href="/">
           <JetWordsLogo src={jetWordsLogoPath} alt="JetWords logo" />
         </a>
+        <HeaderR>
+          <IoSettingsSharp
+            size={"24px"}
+            style={{ padding: "4px", boxSizing: "initial" }}
+            onClick={() => {
+              setSettingsOpen((cur) => !cur);
+              ProblemPopAnimate();
+            }}
+          />
+        </HeaderR>
       </Header>
-      <ProblemSec>
+      <ProblemSec settingsOpen={settingsOpen}>
         <ProblemBox className={shouldAnimate ? "animate" : ""}>
           <ProblemTexts text={wordObj.ja} />
         </ProblemBox>
       </ProblemSec>
-      <InputSec>
+      <InputSec settingsOpen={settingsOpen}>
         <InputWrapper>
           {missCount > 0 && <AnswerText>{wordObj.en}</AnswerText>}
           <InputBox
@@ -177,7 +212,7 @@ function App() {
             onInput={(e) => {
               let newVal = (e.target as HTMLInputElement).value;
               if (newVal == wordObj.en) {
-                if (missCount == 0) {
+                if (missCount == 0 && userSettings.auto_speech_answer == "on") {
                   speech(wordObj.en);
                 }
                 newProblem();
@@ -187,7 +222,7 @@ function App() {
               } else {
                 setInputVal("");
                 setMissCount((cur) => {
-                  if (cur == 0) {
+                  if (cur == 0  && userSettings.auto_speech_answer == "on") {
                     speech(wordObj.en);
                   }
                   return cur + 1;
@@ -197,6 +232,7 @@ function App() {
           />
         </InputWrapper>
       </InputSec>
+      {settingsOpen && <SettingsPanel />}
     </AppFrame>
   );
 }
