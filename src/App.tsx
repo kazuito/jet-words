@@ -8,7 +8,7 @@ import jetWordsLogoPath from "./assets/jetwords-logo-text.svg";
 
 import ProblemTexts from "./ProblemText";
 import SettingsPanel from "./components/SettingsPanel";
-import { useSetRecoilState } from "recoil";
+import { useRecoilState } from "recoil";
 import { userSettingsState } from "./recoil/atoms/userSettingsState";
 
 const PopAnimation = keyframes`
@@ -142,7 +142,7 @@ function App() {
   const [missCount, setMissCount] = useState(0);
   const [shouldAnimate, setShouldAnimate] = useState(true);
   const [settingsOpen, setSettingsOpen] = useState(false);
-  const setUserSettings = useSetRecoilState(userSettingsState);
+  const [userSettings, setUserSettings] = useRecoilState(userSettingsState);
 
   useEffect(() => {
     let user_settings_str = localStorage.getItem("user_settings");
@@ -212,7 +212,7 @@ function App() {
             onInput={(e) => {
               let newVal = (e.target as HTMLInputElement).value;
               if (newVal == wordObj.en) {
-                if (missCount == 0) {
+                if (missCount == 0 && userSettings.auto_speech_answer == "on") {
                   speech(wordObj.en);
                 }
                 newProblem();
@@ -222,7 +222,7 @@ function App() {
               } else {
                 setInputVal("");
                 setMissCount((cur) => {
-                  if (cur == 0) {
+                  if (cur == 0  && userSettings.auto_speech_answer == "on") {
                     speech(wordObj.en);
                   }
                   return cur + 1;
