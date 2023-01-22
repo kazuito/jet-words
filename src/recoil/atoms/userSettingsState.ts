@@ -10,7 +10,6 @@ export const userSettingsState = atom<Settings>({
     ({ onSet }) => {
       onSet((newUserSettings) => {
         localStorage.setItem("user_settings", JSON.stringify(newUserSettings));
-        console.log(JSON.stringify(newUserSettings));
       });
     },
   ],

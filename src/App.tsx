@@ -146,7 +146,6 @@ function App() {
 
   useEffect(() => {
     let user_settings_str = localStorage.getItem("user_settings");
-    console.log("u", user_settings_str);
     if (user_settings_str != null) {
       setUserSettings((cur) => {
         return { ...cur, ...JSON.parse(user_settings_str!) };
