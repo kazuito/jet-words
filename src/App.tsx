@@ -148,8 +148,9 @@ function App() {
     let user_settings_str = localStorage.getItem("user_settings");
     console.log("u", user_settings_str);
     if (user_settings_str != null) {
-      setUserSettings(JSON.parse(user_settings_str));
-      console.log("setls", JSON.parse(user_settings_str));
+      setUserSettings((cur) => {
+        return { ...cur, ...JSON.parse(user_settings_str!) };
+      });
     }
 
     getWords().then((w) => {
