@@ -7,7 +7,7 @@ import getWords from "./word-db";
 import jetWordsLogoPath from "./assets/jetwords-logo-text.svg";
 
 import ProblemTexts from "./ProblemText";
-import SettingsPanel from "./components/SettingsPanel";
+import SettingsPanel from "./components/Settings/SettingsPanel";
 import { useRecoilState } from "recoil";
 import { userSettingsState } from "./recoil/atoms/userSettingsState";
 
@@ -221,7 +221,7 @@ function App() {
               } else {
                 setInputVal("");
                 setMissCount((cur) => {
-                  if (cur == 0  && userSettings.auto_speech_answer == "on") {
+                  if (cur == 0 && userSettings.auto_speech_answer == "on") {
                     speech(wordObj.en);
                   }
                   return cur + 1;
