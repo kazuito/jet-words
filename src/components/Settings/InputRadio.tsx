@@ -25,7 +25,6 @@ const InputRadioLabel = styled.label`
   font-size: 16px;
   padding: 8px 16px;
   border-radius: 6px;
-  border: black solid 3.6px;
   user-select: none;
   cursor: pointer;
   font-weight: bold;
@@ -33,13 +32,17 @@ const InputRadioLabel = styled.label`
   transition: transform 0.1s;
   display: grid;
   place-content: center;
+  color: ${(p) => p.theme.primaryFg};
 
   &:active {
     transform: scale(0.96);
   }
+  &:hover {
+    background: ${(p) => p.theme.listHoverItemBg};
+  }
   &:has(input:checked) {
-    background: black;
-    color: white;
+    background: ${(p) => p.theme.listSelectedItemBg};
+    color: ${(p) => p.theme.listSelectedItemFg};
     animation: ${PopAnimation} 0.3s;
   }
   &:has(input:focus-visible) {

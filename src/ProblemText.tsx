@@ -105,10 +105,12 @@ const ProblemTextWrapper = styled.span`
 `;
 const NormalText = styled.span`
   white-space: nowrap;
+  color:  ${(p)=>p.theme.primaryFg};
 `;
 const SubText = styled.span`
   white-space: nowrap;
   color: #979797;
+  color:  ${(p)=>p.theme.secondaryFg};
 `;
 
 const createLine = (text: string) => {

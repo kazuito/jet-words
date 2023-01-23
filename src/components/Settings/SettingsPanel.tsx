@@ -2,10 +2,7 @@ import styled, { keyframes } from "styled-components";
 import Setting from "./Setting";
 import InputRadio from "./InputRadio";
 import InputSelect from "./InputSelect";
-import { MdInvertColors, MdOutlineInvertColors } from "react-icons/md";
 import { IoColorPalette, IoVolumeMedium } from "react-icons/io5";
-import { IconType } from "react-icons/lib";
-import React from "react";
 import Group from "./Group";
 
 const PopAnimation = keyframes`
@@ -29,15 +26,15 @@ const SettingsSec = styled.div`
   position: relative;
   grid-row: 2 / -1;
   grid-column: 7 / -1;
-  padding:24px;
+  padding: 24px;
   margin: 0 24px 24px 24px;
   border-radius: 16px;
-  border: 3.6px solid #333;
+  border: 3.6px solid ${p=>p.theme.borderColor};
   animation: ${PopAnimation} 0.3s forwards;
   animation-delay: 0.2s;
   opacity: 0;
   font-family: "Inter", sans-serif;
-  background: white;
+  background: ${(p) => p.theme.primaryBg};
 `;
 
 const SettingsPanel = () => {

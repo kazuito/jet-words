@@ -13,7 +13,8 @@ const SelectBox = styled.div`
 const Current = styled.div`
   border-radius: 6px;
   font-weight: bold;
-  border: black solid 3.6px;
+  border: ${(p) => p.theme.borderColor} solid 3.6px;
+  color: ${(p) => p.theme.primaryFg};
   padding: 8px 16px;
   width: 100%;
   display: grid;
@@ -21,10 +22,14 @@ const Current = styled.div`
 `;
 const OptionBox = styled.div`
   position: absolute;
-  background: white;
   width: 100%;
   opacity: 0;
   display: none;
+  background: ${(p) => p.theme.listBg};
+  padding: 4px 8px;
+  border-radius: 6px;
+  box-sizing: initial;
+  margin-left: -8px;
 
   [open] & {
     opacity: 1;
@@ -32,25 +37,19 @@ const OptionBox = styled.div`
   }
 `;
 const Option = styled.div<{ selected: boolean }>`
-  padding: 8px 16px;
-  width: 100%;
+  padding: 6px 16px;
+  margin: 4px 0;
   display: grid;
   place-content: center;
   cursor: pointer;
   font-weight: bold;
-
-  background: ${(p) => (p.selected ? "#000" : "#f7f7f7")};
-  color: ${(p) => (p.selected ? "#fff" : "#000")};
-
-  &:first-child {
-    border-radius: 6px 6px 0 0;
-  }
-  &:last-child {
-    border-radius: 0 0 6px 6px;
-  }
+  border-radius: 4px;
+  background: ${(p) =>
+    p.selected ? p.theme.listSelectedItemBg : "transparent"};
+  color: ${(p) => (p.selected ? p.theme.listSelectedItemFg : p.theme.listFg)};
 
   &:hover {
-    background: ${(p) => !p.selected && "#d5d5d5"};
+    background: ${(p) => !p.selected && p.theme.listHoverItemBg};
   }
   &:focus-visible {
     box-shadow: inset 0 0 0 3.6px orange;
@@ -69,7 +68,7 @@ const InputSelect = (props: {
       )?.text || "Unknown",
     value: userSettings[props.name as keyof Settings],
   });
-  const selectBoxRef = useRef()  as React.MutableRefObject<HTMLInputElement>;
+  const selectBoxRef = useRef() as React.MutableRefObject<HTMLInputElement>;
 
   return (
     <SelectBox ref={selectBoxRef} className="select-box">

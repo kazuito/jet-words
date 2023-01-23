@@ -8,16 +8,22 @@ const SettingWrapper = styled.div`
 `;
 const SettingTitle = styled.div`
   font-weight: bold;
+  color: ${(p) => p.theme.primaryFg};
 `;
 const SettingDescription = styled.div`
   margin-top: 2px;
-  color: gray;
+  color: ${(p) => p.theme.secondaryFg};
 `;
 
 const SettingInput = styled.div`
   width: 50%;
   display: flex;
   gap: 6px;
+  background: ${(p) => p.theme.listBg};
+  margin-top: -8px;
+  padding: 8px;
+  border-radius: 6px;
+  align-self: start;
 `;
 
 const Setting = (props: {

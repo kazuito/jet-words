@@ -1,8 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import {
-  RecoilRoot
-} from "recoil";
+import { RecoilRoot } from "recoil";
 import App from "./App";
 import "./reset.css";
 import "./global.css";
