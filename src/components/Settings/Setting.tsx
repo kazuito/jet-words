@@ -14,6 +14,12 @@ const SettingDescription = styled.div`
   color: gray;
 `;
 
+const SettingInput = styled.div`
+  width: 50%;
+  display: flex;
+  gap: 6px;
+`;
+
 const Setting = (props: {
   title: string;
   description: string;
@@ -25,7 +31,7 @@ const Setting = (props: {
         <SettingTitle>{props.title}</SettingTitle>
         <SettingDescription>{props.description}</SettingDescription>
       </div>
-      {props.children}
+      <SettingInput>{props.children}</SettingInput>
     </SettingWrapper>
   );
 };

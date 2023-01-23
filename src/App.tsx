@@ -182,7 +182,30 @@ function App() {
   }
 
   return (
-    <AppFrame>
+    <AppFrame
+      onClick={(e) => {
+        let el = e.target as HTMLElement;
+        let closeDetails = true;
+        while (el.parentElement != null) {
+          if (el.matches(".select-box[open]")) {
+            closeDetails = false;
+            break;
+          }
+          el = el.parentElement;
+        }
+
+        if (closeDetails)
+          document
+            .querySelectorAll(".select-box[open]")
+            ?.forEach((elem) => {
+              elem.querySelector(".menu")?.classList.add("fade-out");
+              setTimeout(() => {
+                elem.removeAttribute("open");
+                elem.querySelector(".menu")?.classList.remove("fade-out");
+              }, 200);
+            });
+      }}
+    >
       <Header>
         <a href="/">
           <JetWordsLogo src={jetWordsLogoPath} alt="JetWords logo" />

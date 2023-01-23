@@ -1,6 +1,12 @@
 import styled, { keyframes } from "styled-components";
 import Setting from "./Setting";
 import InputRadio from "./InputRadio";
+import InputSelect from "./InputSelect";
+import { MdInvertColors, MdOutlineInvertColors } from "react-icons/md";
+import { IoColorPalette, IoVolumeMedium } from "react-icons/io5";
+import { IconType } from "react-icons/lib";
+import React from "react";
+import Group from "./Group";
 
 const PopAnimation = keyframes`
   0% {
@@ -20,9 +26,10 @@ const PopAnimation = keyframes`
 `;
 
 const SettingsSec = styled.div`
+  position: relative;
   grid-row: 2 / -1;
   grid-column: 7 / -1;
-  padding: 18px 24px;
+  padding:24px;
   margin: 0 24px 24px 24px;
   border-radius: 16px;
   border: 3.6px solid #333;
@@ -32,38 +39,31 @@ const SettingsSec = styled.div`
   font-family: "Inter", sans-serif;
   background: white;
 `;
-const H2 = styled.h2`
-  font-size: 24px;
-  font-weight: bold;
-  color: gray;
-`;
-const SettingsGroupTitle = styled.h3`
-  margin-top: 20px;
-  font-size: 18px;
-  font-weight: bold;
-  color: gray;
-`;
-
-const SettingInput = styled.div`
-  width: 50%;
-  display: flex;
-  gap: 6px;
-`;
 
 const SettingsPanel = () => {
   return (
     <SettingsSec>
-      <H2>Settings</H2>
-      <SettingsGroupTitle>Speech</SettingsGroupTitle>
-      <Setting
-        title="Auto speech the answer"
-        description="Speech the answer automatically"
-      >
-        <SettingInput>
+      <Group title="Appearance" icon={<IoColorPalette />}>
+        <Setting title="Color theme" description="">
+          <InputSelect
+            name="color_theme"
+            options={[
+              { text: "System Default", value: "system_default" },
+              { text: "Dark", value: "dark" },
+              { text: "Light", value: "light" },
+            ]}
+          ></InputSelect>
+        </Setting>
+      </Group>
+      <Group title="Speech" icon={<IoVolumeMedium />}>
+        <Setting
+          title="Auto speech the answer"
+          description="Speech the answer automatically"
+        >
           <InputRadio text="on" name="auto_speech_answer" value="on" />
           <InputRadio text="off" name="auto_speech_answer" value="off" />
-        </SettingInput>
-      </Setting>
+        </Setting>
+      </Group>
     </SettingsSec>
   );
 };
