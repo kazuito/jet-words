@@ -1,15 +1,16 @@
 import { useEffect, useState } from "react";
-import styled, { keyframes } from "styled-components";
-import { getRandInt, speech } from "./utils";
+import styled, { keyframes, ThemeProvider } from "styled-components";
+import { getRandInt, isDarkMode, speech } from "./utils";
 import { IoSettingsSharp } from "react-icons/io5";
-
 import getWords from "./word-db";
 import jetWordsLogoPath from "./assets/jetwords-logo-text.svg";
-
 import ProblemTexts from "./ProblemText";
 import SettingsPanel from "./components/Settings/SettingsPanel";
 import { useRecoilState } from "recoil";
 import { userSettingsState } from "./recoil/atoms/userSettingsState";
+import { lightTheme, darkTheme } from "./components/Themes";
+import { themeState } from "./recoil/atoms/themeState";
+import { ThemeType } from "./types";
 
 const PopAnimation = keyframes`
   0% {
@@ -32,6 +33,8 @@ const AppFrame = styled.div`
   display: grid;
   grid-template-columns: repeat(12, 1fr);
   grid-template-rows: repeat(12, 1fr);
+
+  background-color: ${(p) => p.theme.primaryBg};
 `;
 
 // Header
@@ -49,7 +52,6 @@ const HeaderR = styled.div`
   display: flex;
   align-items: center;
   margin-left: auto;
-  /* background: gold; */
 `;
 const JetWordsLogo = styled.img`
   width: 160px;
@@ -62,14 +64,10 @@ const ProblemSec = styled.div<{ settingsOpen: boolean }>`
   grid-row: 3 / 7;
   display: grid;
   place-content: center center;
-
-  @media screen and (max-width: 1200px) {
-    /* grid-column: 2 / 12; */
-  }
 `;
 const ProblemBox = styled.div`
   padding: 34px 60px;
-  border: 3.6px #333333 solid;
+  border: 3.6px ${(p) => p.theme.borderColor} solid;
   border-radius: 16px;
   display: flex;
   flex-direction: column;
@@ -101,12 +99,13 @@ const InputWrapper = styled.div`
     display: block;
     width: 100%;
     height: 3.6px;
-    background-color: #cfcfcf;
+    background-color: ${(p) => p.theme.borderColor};
     margin-top: 0;
     border-radius: 2px;
+    opacity: 0.5;
   }
   &:has(input:focus)::after {
-    background-color: #333;
+    opacity: 1;
   }
 `;
 const InputCommon = styled.div`
@@ -119,14 +118,32 @@ const InputCommon = styled.div`
   letter-spacing: -0.5px;
 `;
 const InputBox = styled(InputCommon.withComponent("input"))`
-  color: #333333;
+  color: ${(p) => p.theme.primaryFg};
 `;
 const AnswerText = styled(InputCommon)`
   margin-bottom: -44px;
-  color: #c8c8c8;
+  color: ${(p) => p.theme.secondaryFg};
   white-space: nowrap;
   overflow: visible;
 `;
+
+/**
+ * Get Theme object by a theme name
+ * @param themeName name of the theme
+ * @returns Theme object
+ */
+function getTheme(themeName: string): ThemeType {
+  switch (themeName) {
+    case "light":
+      return lightTheme;
+    case "dark":
+      return darkTheme;
+    case "system_default":
+      return isDarkMode() ? darkTheme : lightTheme;
+    default:
+      return lightTheme;
+  }
+}
 
 function App() {
   const [words, setWords] = useState([["Loading...", "Loading..."]]);
@@ -143,6 +160,11 @@ function App() {
   const [shouldAnimate, setShouldAnimate] = useState(true);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [userSettings, setUserSettings] = useRecoilState(userSettingsState);
+  const [curTheme, setCurTheme] = useRecoilState(themeState);
+
+  useEffect(() => {
+    setCurTheme(getTheme(userSettings.color_theme));
+  }, [userSettings.color_theme]);
 
   useEffect(() => {
     let user_settings_str = localStorage.getItem("user_settings");
@@ -182,57 +204,83 @@ function App() {
   }
 
   return (
-    <AppFrame>
-      <Header>
-        <a href="/">
-          <JetWordsLogo src={jetWordsLogoPath} alt="JetWords logo" />
-        </a>
-        <HeaderR>
-          <IoSettingsSharp
-            size={"24px"}
-            style={{ padding: "4px", boxSizing: "initial" }}
-            onClick={() => {
-              setSettingsOpen((cur) => !cur);
-              ProblemPopAnimate();
-            }}
-          />
-        </HeaderR>
-      </Header>
-      <ProblemSec settingsOpen={settingsOpen}>
-        <ProblemBox className={shouldAnimate ? "animate" : ""}>
-          <ProblemTexts text={wordObj.ja} />
-        </ProblemBox>
-      </ProblemSec>
-      <InputSec settingsOpen={settingsOpen}>
-        <InputWrapper>
-          {missCount > 0 && <AnswerText>{wordObj.en}</AnswerText>}
-          <InputBox
-            value={inputVal}
-            onInput={(e) => {
-              let newVal = (e.target as HTMLInputElement).value;
-              if (newVal == wordObj.en) {
-                if (missCount == 0 && userSettings.auto_speech_answer == "on") {
-                  speech(wordObj.en);
-                }
-                newProblem();
-                setInputVal("");
-              } else if (wordObj.en.startsWith(newVal)) {
-                setInputVal(newVal);
-              } else {
-                setInputVal("");
-                setMissCount((cur) => {
-                  if (cur == 0 && userSettings.auto_speech_answer == "on") {
+    <ThemeProvider theme={curTheme}>
+      <AppFrame
+        onClick={(e) => {
+          let el = e.target as HTMLElement;
+          let closeDetails = true;
+          while (el.parentElement != null) {
+            if (el.matches(".select-box[open]")) {
+              closeDetails = false;
+              break;
+            }
+            el = el.parentElement;
+          }
+
+          if (closeDetails)
+            document.querySelectorAll(".select-box[open]")?.forEach((elem) => {
+              elem.querySelector(".menu")?.classList.add("fade-out");
+              setTimeout(() => {
+                elem.removeAttribute("open");
+                elem.querySelector(".menu")?.classList.remove("fade-out");
+              }, 200);
+            });
+        }}
+      >
+        <Header>
+          <a href="/">
+            <JetWordsLogo src={jetWordsLogoPath} alt="JetWords logo" />
+          </a>
+          <HeaderR>
+            <IoSettingsSharp
+              size={"24px"}
+              color={curTheme.primaryFg}
+              onClick={() => {
+                setSettingsOpen((cur) => !cur);
+                ProblemPopAnimate();
+              }}
+            />
+          </HeaderR>
+        </Header>
+        <ProblemSec settingsOpen={settingsOpen}>
+          <ProblemBox className={shouldAnimate ? "animate" : ""}>
+            <ProblemTexts text={wordObj.ja} />
+          </ProblemBox>
+        </ProblemSec>
+        <InputSec settingsOpen={settingsOpen}>
+          <InputWrapper>
+            {missCount > 0 && <AnswerText>{wordObj.en}</AnswerText>}
+            <InputBox
+              value={inputVal}
+              onInput={(e) => {
+                let newVal = (e.target as HTMLInputElement).value;
+                if (newVal == wordObj.en) {
+                  if (
+                    missCount == 0 &&
+                    userSettings.auto_speech_answer == "on"
+                  ) {
                     speech(wordObj.en);
                   }
-                  return cur + 1;
-                });
-              }
-            }}
-          />
-        </InputWrapper>
-      </InputSec>
-      {settingsOpen && <SettingsPanel />}
-    </AppFrame>
+                  newProblem();
+                  setInputVal("");
+                } else if (wordObj.en.startsWith(newVal)) {
+                  setInputVal(newVal);
+                } else {
+                  setInputVal("");
+                  setMissCount((cur) => {
+                    if (cur == 0 && userSettings.auto_speech_answer == "on") {
+                      speech(wordObj.en);
+                    }
+                    return cur + 1;
+                  });
+                }
+              }}
+            />
+          </InputWrapper>
+        </InputSec>
+        {settingsOpen && <SettingsPanel />}
+      </AppFrame>
+    </ThemeProvider>
   );
 }
 

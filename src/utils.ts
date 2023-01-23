@@ -20,4 +20,17 @@ function speech(text: string) {
   synth.speak(utter);
 }
 
-export { getRandInt, speech };
+/**
+ * Detect if the system is in dark mode
+ * @return In dark mode, returns `true`
+ */
+function isDarkMode(): boolean {
+  if (
+    window.matchMedia &&
+    window.matchMedia("(prefers-color-scheme: dark)").matches
+  )
+    return true;
+  return false;
+}
+
+export { getRandInt, speech, isDarkMode };

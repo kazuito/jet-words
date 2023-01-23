@@ -4,6 +4,7 @@ import { Settings } from "../../types";
 export const userSettingsState = atom<Settings>({
   key: "userSettingsState",
   default: {
+    color_theme: "system_default",
     auto_speech_answer: "on",
   },
   effects: [
@@ -14,3 +15,4 @@ export const userSettingsState = atom<Settings>({
     },
   ],
 });
+
