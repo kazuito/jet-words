@@ -90,8 +90,9 @@ const AnswerText = styled(InputCommon)`
 `;
 
 const Problem = (props: { allWords: string[][]; settingsOpen: boolean }) => {
-  const [missCount, setMissCount] = useState(0);
   const [inputVal, setInputVal] = useState("");
+  const [missCount, setMissCount] = useState(0);
+  const [correctCharCount, setCorrectCharCount] = useState(0);
   const [wordObj, setWordObj] = useState(() => {
     let rnd = getRandInt(0, props.allWords.length);
     return {
@@ -100,6 +101,7 @@ const Problem = (props: { allWords: string[][]; settingsOpen: boolean }) => {
       number: rnd,
     };
   });
+  const [answerText, setAnswerText] = useState("");
   const [userSettings, setUserSettings] = useRecoilState(userSettingsState);
   const ProblemBoxRef = useRef() as React.MutableRefObject<HTMLInputElement>;
 
@@ -120,6 +122,7 @@ const Problem = (props: { allWords: string[][]; settingsOpen: boolean }) => {
 
   function newProblem() {
     setMissCount(0);
+    setCorrectCharCount(0);
     setWordObj((prev) => {
       let rnd = getRandInt(0, props.allWords.length);
       return {
@@ -139,23 +142,33 @@ const Problem = (props: { allWords: string[][]; settingsOpen: boolean }) => {
       </ProblemSec>
       <InputSec shiftLeft={props.settingsOpen}>
         <InputWrapper>
-          {missCount > 0 && <AnswerText>{wordObj.en}</AnswerText>}
+          {missCount > 0 && <AnswerText>{answerText}</AnswerText>}
           <InputBox
             value={inputVal}
             onInput={(e) => {
               let newVal = (e.target as HTMLInputElement).value;
               if (newVal == wordObj.en) {
-                if (missCount == 0 && userSettings.auto_speech_answer == "on") {
+                if (
+                  missCount < 2 &&
+                  userSettings.auto_speech_answer == "on"
+                ) {
                   speech(wordObj.en);
                 }
                 newProblem();
                 setInputVal("");
               } else if (wordObj.en.startsWith(newVal)) {
                 setInputVal(newVal);
+                setCorrectCharCount((cur) =>
+                  cur < newVal.length ? newVal.length : cur
+                );
               } else {
                 setInputVal("");
+                setAnswerText(() => {
+                  if (missCount >= 1) return wordObj.en;
+                  return wordObj.en.slice(0, correctCharCount + 1);
+                });
                 setMissCount((cur) => {
-                  if (cur == 0 && userSettings.auto_speech_answer == "on") {
+                  if (cur == 1 && userSettings.auto_speech_answer == "on") {
                     speech(wordObj.en);
                   }
                   return cur + 1;
