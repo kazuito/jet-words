@@ -1,4 +1,4 @@
-import { ja_parse } from "../ProblemText";
+import { ja_parse } from "../components/Problem/ProblemText";
 
 test("ja-parser", () => {
   expect(
