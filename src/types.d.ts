@@ -7,6 +7,7 @@ type ThemeType = {
   primaryFg: string;
   secondaryFg: string;
   primaryBg: string;
+  secondaryBg: string;
   borderColor: string;
   listSelectedItemBg: string;
   listSelectedItemFg: string;

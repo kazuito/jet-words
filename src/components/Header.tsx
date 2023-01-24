@@ -23,6 +23,25 @@ const JetWordsLogo = styled.img`
   width: 160px;
   height: auto;
 `;
+const NavIcon = styled.button`
+  border: none;
+  padding: 0;
+  display: grid;
+  place-content: center;
+  background: transparent;
+  border-radius: 50%;
+  padding: 4px;
+  cursor: pointer;
+  transition: 0.1s;
+  padding: 8px;
+
+  &:hover {
+    background: ${(p) => p.theme.secondaryBg};
+  }
+  &:active svg {
+    transform: scale(0.9);
+  }
+`;
 
 const Header = (props: {
   setSettingsOpen: React.Dispatch<React.SetStateAction<boolean>>;
@@ -35,13 +54,13 @@ const Header = (props: {
         <JetWordsLogo src={jetWordsLogoPath} alt="JetWords logo" />
       </a>
       <HeaderR>
-        <IoSettingsSharp
-          size={"24px"}
-          color={curTheme.primaryFg}
+        <NavIcon
           onClick={() => {
             props.setSettingsOpen((cur) => !cur);
           }}
-        />
+        >
+          <IoSettingsSharp size={"24px"} color={curTheme.primaryFg} />
+        </NavIcon>
       </HeaderR>
     </HeaderContainer>
   );
