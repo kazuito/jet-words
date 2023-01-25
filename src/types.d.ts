@@ -1,9 +1,9 @@
-type Settings = {
+export type Settings = {
   color_theme: string;
   auto_speech_answer: string;
 };
 
-type ThemeType = {
+export type ThemeType = {
   primaryFg: string;
   secondaryFg: string;
   primaryBg: string;
@@ -17,4 +17,8 @@ type ThemeType = {
   listFg: string;
 };
 
-export { Settings, ThemeType };
+export type ScoreData = {
+  key: string;
+  miss: number;
+  correct: number;
+};

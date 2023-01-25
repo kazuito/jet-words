@@ -1,9 +1,11 @@
 import { useEffect, useRef, useState } from "react";
 import { useRecoilState } from "recoil";
 import styled, { keyframes } from "styled-components";
+import { scoreDataState } from "../../recoil/atoms/scoreDataState";
 import { userSettingsState } from "../../recoil/atoms/userSettingsState";
 import { getRandInt, speech } from "../../utils";
 import ProblemTexts from "./ProblemText";
+import { ScoreData } from "../../types";
 
 const PopAnimation = keyframes`
   0% {
@@ -104,6 +106,10 @@ const Problem = (props: { allWords: string[][]; settingsOpen: boolean }) => {
   const [answerText, setAnswerText] = useState("");
   const [userSettings, setUserSettings] = useRecoilState(userSettingsState);
   const ProblemBoxRef = useRef() as React.MutableRefObject<HTMLInputElement>;
+  const [scoreData, setScoreData] = useRecoilState(scoreDataState);
+  const [curScoreDataIndex, setCurScoreDataIndex] = useState(0);
+
+  useEffect(() => {}, []);
 
   useEffect(() => {
     problemPopAnimate();
@@ -148,12 +154,29 @@ const Problem = (props: { allWords: string[][]; settingsOpen: boolean }) => {
             onInput={(e) => {
               let newVal = (e.target as HTMLInputElement).value;
               if (newVal == wordObj.en) {
-                if (
-                  missCount < 2 &&
-                  userSettings.auto_speech_answer == "on"
-                ) {
+                if (missCount < 2 && userSettings.auto_speech_answer == "on") {
                   speech(wordObj.en);
                 }
+
+                // Update Score Data
+                let scoreData_tmp = JSON.parse(
+                  JSON.stringify(scoreData)
+                ) as ScoreData[];
+                let index = scoreData_tmp.findIndex(
+                  (elem) => elem.key == wordObj.en
+                );
+                if (index == -1) {
+                  scoreData_tmp.push({
+                    key: wordObj.en,
+                    miss: missCount == 0 ? 0 : 1,
+                    correct: missCount == 0 ? 1 : 0,
+                  });
+                } else {
+                  if (missCount == 0) scoreData_tmp[index].correct++;
+                  else scoreData_tmp[index].miss++;
+                }
+                setScoreData(scoreData_tmp);
+
                 newProblem();
                 setInputVal("");
               } else if (wordObj.en.startsWith(newVal)) {

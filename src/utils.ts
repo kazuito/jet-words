@@ -4,7 +4,7 @@
  * @param max
  * @returns random int
  */
-function getRandInt(min: number, max: number): number {
+export function getRandInt(min: number, max: number): number {
   return min + Math.floor(Math.random() * max);
 }
 
@@ -14,7 +14,7 @@ const synth = window.speechSynthesis;
  * Speech text with the Web Speech API
  * @param text text to speech
  */
-function speech(text: string) {
+export function speech(text: string) {
   utter.text = text;
   synth.cancel();
   synth.speak(utter);
@@ -24,7 +24,7 @@ function speech(text: string) {
  * Detect if the system is in dark mode
  * @return In dark mode, returns `true`
  */
-function isDarkMode(): boolean {
+export function isDarkMode(): boolean {
   if (
     window.matchMedia &&
     window.matchMedia("(prefers-color-scheme: dark)").matches
@@ -32,5 +32,3 @@ function isDarkMode(): boolean {
     return true;
   return false;
 }
-
-export { getRandInt, speech, isDarkMode };
