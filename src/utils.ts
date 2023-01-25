@@ -51,7 +51,7 @@ export function encryptSetLS(key: string, item: any): void {
 /**
  * Get an encrypted item from local storage and returns the decrypted one
  * @returns status: 1 if successful, 0 if item not found, -1 if decryption failed
- * @returns item: Encrypted item on success, null otherwise
+ * @returns item: Decrypted item on success, null otherwise
  */
 export function decryptGetLS(key: string): [number, any | null] {
   let ls = localStorage.getItem(key);
