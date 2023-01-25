@@ -26,7 +26,6 @@ export const scoreDataState = atom<ScoreData[]>({
   effects: [
     ({ onSet }) => {
       onSet((newData) => {
-        console.log(JSON.stringify(newData));
         localStorage.setItem(
           "score_data",
           CryptoJS.AES.encrypt(
