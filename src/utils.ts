@@ -1,3 +1,5 @@
+import CryptoJS from "crypto-js";
+
 /**
  * Get random integer (min <= x < max)
  * @param min
@@ -31,4 +33,41 @@ export function isDarkMode(): boolean {
   )
     return true;
   return false;
+}
+
+/**
+ * Encrypt an item and set it to local storage
+ */
+export function encryptSetLS(key: string, item: any): void {
+  localStorage.setItem(
+    key,
+    CryptoJS.AES.encrypt(
+      JSON.stringify(item),
+      import.meta.env.VITE_CRYPTO_JS_SECRET_KEY
+    ).toString()
+  );
+}
+
+/**
+ * Get an encrypted item from local storage and returns the decrypted one
+ * @returns status: 1 if successful, 0 if item not found, -1 if decryption failed
+ * @returns item: Encrypted item on success, null otherwise
+ */
+export function decryptGetLS(key: string): [number, any | null] {
+  let ls = localStorage.getItem(key);
+  if (ls) {
+    try {
+      return [
+        1,
+        JSON.parse(
+          CryptoJS.AES.decrypt(
+            ls,
+            import.meta.env.VITE_CRYPTO_JS_SECRET_KEY
+          ).toString(CryptoJS.enc.Utf8)
+        ),
+      ];
+    } catch (error) {
+      return [-1, null];
+    }
+  } else return [0, null];
 }
