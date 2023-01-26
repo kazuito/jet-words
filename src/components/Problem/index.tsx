@@ -24,8 +24,9 @@ const PopAnimation = keyframes`
 
 // Problem Section
 const ProblemSec = styled.div<{ shiftLeft: boolean }>`
-  grid-column: ${(p) => (p.shiftLeft ? "2 / 6" : "2 / -2")};
+  grid-column: ${(p) => (p.shiftLeft ? "1 / 7" : "2 / -2")};
   grid-row: 3 / 7;
+  padding-left: 24px;
   display: grid;
   place-content: center center;
 `;
@@ -48,6 +49,7 @@ const InputSec = styled.div<{ shiftLeft: boolean }>`
   place-content: center center;
   grid-column: ${(p) => (p.shiftLeft ? "1/7" : "1/-1")};
   grid-row: 8 / 9;
+  padding-left: 24px;
   position: relative;
   transition: 0.3s;
   transition: 1s;
