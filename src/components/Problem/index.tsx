@@ -177,6 +177,20 @@ const Problem = (props: { allWords: string[][]; settingsOpen: boolean }) => {
                   if (missCount == 0) scoreData_tmp[index].correct++;
                   else scoreData_tmp[index].miss++;
                 }
+
+                // Sort Score Data
+                scoreData_tmp.sort((a, b) => {
+                  if (a.correct > 0 && b.correct > 0) {
+                    let aRate = a.correct / (a.correct + a.miss);
+                    let bRate = b.correct / (b.correct + b.miss);
+
+                    if (aRate > bRate) {
+                      return 1;
+                    }
+                  }
+                  if (a.miss > b.miss || a.correct < b.correct) return -1;
+                  return 1;
+                });
                 setScoreData(scoreData_tmp);
 
                 newProblem();
