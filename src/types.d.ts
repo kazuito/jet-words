@@ -15,6 +15,8 @@ export type ThemeType = {
   listHoverItemFg: string;
   listBg: string;
   listFg: string;
+  errorBg: string;
+  errorFg: string;
 };
 
 export type ScoreData = {

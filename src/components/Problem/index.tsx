@@ -30,16 +30,53 @@ const ProblemSec = styled.div<{ shiftLeft: boolean }>`
   display: grid;
   place-content: center center;
 `;
-const ProblemBox = styled.div`
-  padding: 34px 60px;
-  border: 3.6px ${(p) => p.theme.borderColor} solid;
+
+const ProblemBox = styled.div<{ isTarget: boolean }>`
+  padding: ${(p) => (p.isTarget ? "42px" : "34px")} 60px;
+  border: 3.6px ${(p) => (p.isTarget ? p.theme.errorBg : p.theme.borderColor)}
+    solid;
   border-radius: 16px;
   display: flex;
   flex-direction: column;
   gap: 4px;
+  position: relative;
 
   &.pop {
     animation: ${PopAnimation} 0.3s;
+  }
+  &.target-killed {
+    transition: 0.4s;
+    border-color: #438d43;
+    box-shadow: 0 0 24px green;
+  }
+`;
+const ProblemMetaBox = styled.div`
+  position: absolute;
+  bottom: -16px;
+  left: 0;
+  transform: translateY(100%);
+  /* background: skyblue; */
+  width: 100%;
+  display: flex;
+  justify-content: center;
+`;
+const TargetBudge = styled.div`
+  position: absolute;
+  left: 24px;
+  top: 0;
+  transform: translateY(-50%);
+  background: ${(p) => p.theme.primaryBg};
+  font-family: "Inter", sans-serif;
+  font-weight: bold;
+  font-size: 14px;
+  border: 3.6px solid ${(p) => p.theme.errorBg};
+  padding: 2px 16px 4px 16px;
+  color: ${(p) => p.theme.errorBg};
+  border-radius: 16px;
+
+  .target-killed & {
+    opacity: 0;
+    transition: 0.8s;
   }
 `;
 
@@ -102,14 +139,14 @@ const Problem = (props: { allWords: string[][]; settingsOpen: boolean }) => {
     return {
       en: props.allWords[rnd][0],
       ja: props.allWords[rnd][1],
-      number: rnd,
+      isWorst10: false,
     };
   });
   const [answerText, setAnswerText] = useState("");
   const [userSettings, setUserSettings] = useRecoilState(userSettingsState);
-  const ProblemBoxRef = useRef() as React.MutableRefObject<HTMLInputElement>;
   const [scoreData, setScoreData] = useRecoilState(scoreDataState);
-  const [curScoreDataIndex, setCurScoreDataIndex] = useState(0);
+  const [shouldAnimate, setShouldAnimate] = useState(false);
+  const [targetKilled, setTargetKilled] = useState(false);
 
   useEffect(() => {}, []);
 
@@ -122,29 +159,51 @@ const Problem = (props: { allWords: string[][]; settingsOpen: boolean }) => {
   }, [props.allWords.length]);
 
   function problemPopAnimate() {
-    ProblemBoxRef.current.classList.add("pop");
+    setShouldAnimate(true);
     setTimeout(() => {
-      ProblemBoxRef.current.classList.remove("pop");
+      setShouldAnimate(false);
     }, 300);
   }
 
   function newProblem() {
+    setInputVal("");
     setMissCount(0);
     setCorrectCharCount(0);
     setWordObj((prev) => {
+      problemPopAnimate();
+      if (getRandInt(0, 4) == 0) {
+        // Choose from 10 with the lowest accuracy rate
+        let rnd = getRandInt(0, 10);
+        let en = scoreData[rnd].key;
+        let src = props.allWords.find((elem) => elem[0] == en);
+        if (src)
+          return {
+            en: src[0],
+            ja: src[1],
+            isWorst10: true,
+          };
+      }
+      // Choose from all problems
       let rnd = getRandInt(0, props.allWords.length);
       return {
         en: props.allWords[rnd][0],
         ja: props.allWords[rnd][1],
-        number: rnd,
+        isWorst10: false,
       };
     });
-    problemPopAnimate();
   }
   return (
     <>
       <ProblemSec shiftLeft={props.settingsOpen}>
-        <ProblemBox ref={ProblemBoxRef}>
+        <ProblemBox
+          className={`${shouldAnimate ? "pop" : ""} ${
+            targetKilled ? "target-killed" : ""
+          }`}
+          isTarget={wordObj.isWorst10}
+        >
+          {wordObj.isWorst10 && (
+            <TargetBudge title="Worst 10 of accuracy rate">Target</TargetBudge>
+          )}
           <ProblemTexts text={wordObj.ja} />
         </ProblemBox>
       </ProblemSec>
@@ -180,21 +239,25 @@ const Problem = (props: { allWords: string[][]; settingsOpen: boolean }) => {
 
                 // Sort Score Data
                 scoreData_tmp.sort((a, b) => {
-                  if (a.correct > 0 && b.correct > 0) {
-                    let aRate = a.correct / (a.correct + a.miss);
-                    let bRate = b.correct / (b.correct + b.miss);
+                  let aRate = a.correct / (a.correct + a.miss);
+                  let bRate = b.correct / (b.correct + b.miss);
 
-                    if (aRate > bRate) {
-                      return 1;
-                    }
-                  }
+                  if (aRate > bRate) return 1;
                   if (a.miss > b.miss || a.correct < b.correct) return -1;
                   return 1;
                 });
                 setScoreData(scoreData_tmp);
 
-                newProblem();
-                setInputVal("");
+                if (wordObj.isWorst10 && missCount == 0) {
+                  setTargetKilled(true);
+                  setInputVal(wordObj.en);
+                  setTimeout(() => {
+                    newProblem();
+                    setTargetKilled(false);
+                  }, 800);
+                } else {
+                  newProblem();
+                }
               } else if (wordObj.en.startsWith(newVal)) {
                 setInputVal(newVal);
                 setCorrectCharCount((cur) =>

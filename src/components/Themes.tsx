@@ -12,6 +12,10 @@ const lightTheme: ThemeType = {
   listHoverItemFg: "#fff",
   listBg: "#f5f5f5",
   listFg: "#323232",
+  errorBg:"#eb0000",
+  errorFg:"#fff"
+
+  
 };
 
 const darkTheme: ThemeType = {
@@ -26,6 +30,8 @@ const darkTheme: ThemeType = {
   listHoverItemFg: "#fff",
   listBg: "#232323",
   listFg: "#8f8f8f",
+  errorBg:"#a52d2d",
+  errorFg:"#ff9e9e"
 };
 
 export { lightTheme, darkTheme };
